@@ -10,429 +10,353 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-default">
-
-  <!-- BACKGROUND GLOWS -->
   <div class="bg-glow bg-glow-1"></div>
   <div class="bg-glow bg-glow-2"></div>
-
-  <!-- APP CONTAINMENT -->
   <div class="app-container">
-
-    <!-- HEADER (Visible when onboarded) -->
     <header class="app-header hidden" id="appHeader">
       <div class="header-logo">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
         <span>MOMENTUM<span class="highlight">BUILDER</span></span>
       </div>
-      
       <div class="header-stats">
         <div class="stat-badge level-badge">
           <span class="label">LVL</span>
           <span class="value" id="lblLevel">1</span>
         </div>
-        
         <div class="xp-container">
           <div class="xp-bar-wrapper">
             <div class="xp-bar" id="barXP" style="width: 0%"></div>
           </div>
           <span class="xp-text" id="lblXP">0 / 250 XP</span>
         </div>
-
-        <div class="stat-badge coins-badge" title="Focus Coins - Earn by completing tasks, spend in Shop">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon yellow"><circle cx="12" cy="12" r="8"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <div class="stat-badge coins-badge">
+          <span class="label">🪙</span>
           <span class="value" id="lblCoins">50</span>
         </div>
-
-        <div class="stat-badge streak-badge" title="Daily Streak - Complete tasks daily to increase multiplier">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon red"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+        <div class="stat-badge streak-badge">
+          <span class="label">🔥</span>
           <span class="value" id="lblStreak">0</span>
         </div>
-
-        <div class="stat-badge shield-badge" title="Streak Shields - Prevents loss if you miss a day">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon blue"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <div class="stat-badge shield-badge">
+          <span class="label">🛡️</span>
           <span class="value" id="lblShields">0</span>
         </div>
-
-        <button class="btn btn-secondary btn-sm" id="btnResetAll" title="Reset all state and start over">Reset Mission</button>
+        <button class="btn btn-secondary btn-sm" id="btnResetAll">Reset Mission</button>
       </div>
     </header>
 
-    <!-- ONBOARDING PANEL -->
+    <!-- ONBOARDING -->
     <main class="onboarding-panel" id="onboardingPanel">
       <div class="onboarding-header">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hero-logo-icon"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hero-logo-icon"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
         <h1>Stop Overthinking. Start Shipping.</h1>
-        <p>Momentum Builder deconstructs your startup idea into a frictionless, 5-day gamified roadmap tailored exactly to your life constraints. Pick a coach, get daily tasks, and upload proof to progress.</p>
+        <p>Momentum Builder uses Claude AI to deconstruct your startup idea into a personalized, 5-day gamified roadmap tailored to your exact constraints.</p>
       </div>
-
-      <form class="onboarding-form" id="onboardingForm" onsubmit="return false;">
+      <form class="onboarding-form" id="onboardingForm">
         <div class="form-section">
-          <h2>1. Tell us about yourself</h2>
+          <h2>Profile</h2>
           <div class="form-grid">
             <div class="form-group">
               <label for="inputName">Your Name</label>
-              <input type="text" id="inputName" placeholder="e.g. Sam" required autocomplete="off">
+              <input type="text" id="inputName" required placeholder="Alex Founder">
             </div>
             <div class="form-group">
-              <label for="inputCity">Current City</label>
-              <input type="text" id="inputCity" placeholder="e.g. San Francisco, Mumbai" required autocomplete="off">
+              <label for="inputCity">City</label>
+              <input type="text" id="inputCity" required placeholder="San Francisco">
             </div>
             <div class="form-group">
-              <label for="selectOccupation">What do you do?</label>
+              <label for="selectOccupation">Role</label>
               <select id="selectOccupation">
                 <option value="student">Student</option>
-                <option value="professional">Working Professional</option>
-                <option value="founder">Full-time Founder</option>
+                <option value="professional">Professional</option>
+                <option value="founder">Aspiring Founder</option>
               </select>
             </div>
             <div class="form-group">
               <label for="inputInstitution" id="labelInstitution">College / University Name</label>
-              <input type="text" id="inputInstitution" placeholder="e.g. Stanford University" required autocomplete="off">
+              <input type="text" id="inputInstitution" required placeholder="e.g. Stanford University">
             </div>
           </div>
         </div>
-
         <div class="form-section">
-          <h2>2. Describe your Startup / Project Idea</h2>
+          <h2>Startup</h2>
           <div class="form-group">
-            <label for="textIdea">What is your elevator pitch? (Be specific so our generator tailors it properly)</label>
-            <textarea id="textIdea" rows="3" placeholder="e.g. A SaaS platform that lets newsletter writers launch a referral program in 1 click to double their audience growth rate..." required></textarea>
+            <label for="textIdea">Startup Idea</label>
+            <textarea id="textIdea" rows="3" required placeholder="AI tool that turns lecture notes into flashcards"></textarea>
           </div>
           <div class="form-grid">
             <div class="form-group">
-              <label for="selectCategory">Project Category</label>
+              <label for="selectCategory">Category</label>
               <select id="selectCategory">
-                <option value="SaaS">SaaS / Web App</option>
-                <option value="MobileApp">Mobile Application</option>
-                <option value="ContentCreation">Content Creation (Newsletter/Podcast/YouTube)</option>
-                <option value="Research">Academic Research / Study Plan</option>
-                <option value="Event">Event / Local Community Launch</option>
+                <option value="SaaS">SaaS</option>
+                <option value="MobileApp">Mobile App</option>
+                <option value="ContentCreation">Content</option>
+                <option value="Research">Research</option>
+                <option value="Event">Event</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="selectProgress">How much have you progressed?</label>
+              <label for="selectProgress">Progress</label>
               <select id="selectProgress">
-                <option value="none">No progress at all (Just a raw idea)</option>
-                <option value="sketches">Done initial research or sketches</option>
-                <option value="mockup">Built a mockup or landing page</option>
-                <option value="prototype">Have a working prototype / codebase</option>
+                <option value="none">Just an idea</option>
+                <option value="wireframe">Wireframes done</option>
+                <option value="mvp">MVP started</option>
               </select>
             </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h2>3. Define your constraints & Vibe</h2>
-          <div class="form-grid">
             <div class="form-group">
-              <label for="selectBudget">Budget Available</label>
+              <label for="selectBudget">Budget</label>
               <select id="selectBudget">
-                <option value="0">$0 (Bootstrapped / Free tools only)</option>
-                <option value="100">&lt;$100 (Starter domain & basic credits)</option>
-                <option value="1000">&lt;$1000 (Ready to spend on API/Auth keys)</option>
-                <option value="unlimited">Unlimited / VC funded</option>
+                <option value="0">$0</option>
+                <option value="100">$100</option>
+                <option value="500">$500+</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="selectTime">Daily Free Time</label>
+              <label for="selectTime">Daily Time</label>
               <select id="selectTime">
-                <option value="15m">15 Minutes / Day (Micro-sprints, zero friction)</option>
-                <option value="1h" selected>1 Hour / Day (Focused execution)</option>
-                <option value="4h">4 Hours / Day (Serious building)</option>
-                <option value="fulltime">Full-time (Deep immersion)</option>
+                <option value="15m">15 min</option>
+                <option value="1h">1 hour</option>
+                <option value="4h">4 hours</option>
+                <option value="fulltime">Full-time</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="selectSkill">Technical Skill Level</label>
+              <label for="selectSkill">Skill Level</label>
               <select id="selectSkill">
-                <option value="beginner">Beginner (No-code / visual tools)</option>
-                <option value="intermediate" selected>Intermediate (Simple HTML/JS/CSS templates)</option>
-                <option value="advanced">Advanced Coder (Full-stack code / databases)</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="selectCoach">Coach Personality Vibe</label>
+              <label for="selectCoach">Coach Vibe</label>
               <select id="selectCoach">
-                <option value="zen">Zen Master (Mindful & calm steps)</option>
-                <option value="hype">Hype Beast (SV Bro, high energy)</option>
-                <option value="drill">Drill Sergeant (Strict, tough love)</option>
+                <option value="zen">Zen</option>
+                <option value="hype">Hype</option>
+                <option value="drill">Drill Sergeant</option>
               </select>
             </div>
           </div>
         </div>
-
         <button type="submit" class="btn btn-primary btn-large btn-glow-anim" id="btnSubmitOnboarding">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-          ACTIVATE AI ENGINE & GENERATE ROADMAP
+          ⚡ GENERATE MY AI ROADMAP
         </button>
       </form>
-
-      <!-- AI LOADING LOG CONSOLE -->
       <div class="ai-console hidden" id="aiConsole">
         <div class="console-header">
           <span class="status-dot green"></span>
-          <span>AI ROADMAP SCHEDULER ACTIVE</span>
+          <span>CLAUDE AI ROADMAP ENGINE ACTIVE</span>
         </div>
-        <div class="console-body" id="consoleBody">
-          <!-- Logs get injected here -->
-        </div>
+        <div class="console-body" id="consoleBody"></div>
       </div>
     </main>
 
-    <!-- DASHBOARD VIEW (Visible when onboarded) -->
+    <!-- DASHBOARD -->
     <main class="dashboard-panel hidden" id="dashboardPanel">
-      
-      <!-- LEFT / MAIN CONTENT AREA -->
       <div class="dashboard-main">
-
-        <!-- INSTAGRAM STORIES ROW -->
-        <section class="glass-card stories-section">
-          <h3>COHORT SHIPPING STORIES</h3>
-          <div class="stories-bar" id="storiesBar">
-            <div class="story-circle my-story" id="storyUser">
-              <div class="avatar-ring">
-                <span class="avatar-emoji">👤</span>
-              </div>
-              <span class="story-name">My Story</span>
-            </div>
-            <!-- Peer stories will be injected dynamically -->
-          </div>
+        <section class="stories-section glass-card">
+          <h3>Cohort Stories</h3>
+          <div class="stories-bar" id="storiesBar"></div>
         </section>
-
-        <!-- MISSION BANNER -->
-        <section class="glass-card mission-banner">
+        <section class="mission-banner glass-card">
           <div class="mission-info">
-            <span class="badge badge-accent">ACTIVE MISSION</span>
-            <h2 id="lblMissionTitle">Building SaaS MVP</h2>
-            <p id="lblMissionIdea">Idea Pitch goes here...</p>
+            <span class="badge badge-accent">Active Mission</span>
+            <h2 id="lblMissionTitle">Day 1</h2>
+            <p id="lblMissionIdea">Your idea</p>
           </div>
           <div class="coach-avatar-card">
-            <div class="coach-face" id="lblCoachFace">🧘‍♂️</div>
+            <span class="coach-face" id="lblCoachFace">🧘</span>
             <div class="coach-meta">
-              <span class="coach-name" id="lblCoachName">Zen Master</span>
-              <span class="coach-status">ACTIVE COACH</span>
+              <span class="coach-name" id="lblCoachName">Coach</span>
+              <span class="coach-status">ONLINE</span>
             </div>
           </div>
         </section>
-
-        <!-- ROADMAP MAP TRAIL -->
-        <section class="glass-card progression-map">
-          <h3>PROJECT TIMELINE</h3>
-          <div class="timeline-nodes" id="timelineNodes">
-            <!-- Day nodes get injected here -->
-          </div>
+        <section class="progression-map glass-card">
+          <h3>5-Day Roadmap</h3>
+          <div class="timeline-nodes" id="timelineNodes"></div>
         </section>
-
-        <!-- ACTIVE DAY DESK -->
-        <section class="glass-card focus-desk" id="focusDesk">
+        <section class="focus-desk glass-card">
           <div class="desk-header">
             <div>
               <span class="badge" id="lblFocusDay">DAY 1</span>
-              <h2 id="lblFocusPhaseName">Validate Idea & Stress Test</h2>
+              <h2 id="lblFocusPhaseName">Phase</h2>
             </div>
-            <button class="btn btn-secondary btn-sm" id="btnSimulateDay" title="Advance to next day instantly (for testing/demo)">Simulate Next Day</button>
           </div>
-          
-          <div class="phase-desc" id="lblFocusDesc">
-            Phase description goes here...
-          </div>
-
-          <!-- CHECKLIST -->
+          <div class="phase-desc" id="lblFocusDesc"></div>
           <div class="checklist-box">
-            <h4>TODAY'S FRICTIONLESS CHECKLIST</h4>
-            <div class="checklist-items" id="checklistItems">
-              <!-- Steps checkboxes get injected here -->
-            </div>
+            <h4>Today's Checklist</h4>
+            <div class="checklist-items" id="checklistItems"></div>
           </div>
 
-          <!-- BOTTOM WORK BAR: TIMER & EMERGENCY -->
+          <!-- Advance Day Button (replaces Simulate) -->
+          <div class="advance-day-wrapper">
+            <button class="btn btn-advance" id="btnAdvanceDay" disabled>Complete all tasks to advance</button>
+          </div>
+
           <div class="work-bar">
-            <!-- DUOLINGO-STYLE FLOW SPRINT TIMER -->
             <div class="timer-box gamified">
+              <div class="sprint-presets">
+                <button class="btn-sprint-preset" id="btnSprint5">5m</button>
+                <button class="btn-sprint-preset active" id="btnSprint25">25m</button>
+                <button class="btn-sprint-preset" id="btnSprint45">45m</button>
+              </div>
               <div class="flow-circle-wrapper">
-                <svg class="flow-circle-svg" viewBox="0 0 100 100">
-                  <circle class="flow-circle-bg" cx="50" cy="50" r="45"></circle>
-                  <circle class="flow-circle-progress" id="flowProgressRing" cx="50" cy="50" r="45" stroke-dasharray="283" stroke-dashoffset="283"></circle>
+                <svg class="flow-circle-svg" viewBox="0 0 120 120">
+                  <circle class="flow-circle-bg" cx="60" cy="60" r="52"></circle>
+                  <circle class="flow-circle-progress" id="flowProgressRing" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="0"></circle>
                 </svg>
                 <div class="flow-center-info">
-                  <div class="timer-time" id="lblTimer">05:00</div>
-                  <div class="multiplier-badge" id="lblMultiplier">1x FLOW</div>
+                  <span class="timer-time" id="lblTimer">25:00</span>
+                  <span class="multiplier-badge" id="lblMultiplier">1x FLOW</span>
                 </div>
               </div>
               <div class="timer-controls">
-                <button class="btn btn-secondary btn-sm" id="btnToggleTimer">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                  START FLOW SPRINT
-                </button>
-                <div class="timer-sound-toggle">
-                  <input type="checkbox" id="checkFocusSound">
-                  <label for="checkFocusSound">Lo-fi Hum 🎧</label>
-                </div>
-              </div>
-              <div class="coin-stream-target" id="coinStreamTarget">
-                <!-- Floating coin animations occur here -->
-                <div class="active-sprint-stats">
-                  <span id="lblSprintCoins">+0 🪙</span> | <span id="lblSprintProgress">0%</span>
-                </div>
+                <button class="btn btn-primary" id="btnToggleTimer">Start Sprint</button>
+                <label><input type="checkbox" id="checkFocusSound"> Focus hum</label>
+                <div class="coin-stream-target" id="coinStreamTarget"></div>
+                <p class="active-sprint-stats">Coins: <span id="lblSprintCoins">0</span> · Progress: <span id="lblSprintProgress">0%</span></p>
               </div>
             </div>
-
-            <!-- EMERGENCY -->
             <div class="emergency-box">
-              <button class="btn btn-danger btn-pulse" id="btnEmergency">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                I'M PROCRASTINATING!
-              </button>
+              <button class="btn btn-danger btn-pulse" id="btnEmergency">🆘 Emergency Coach</button>
+              <p class="emergency-hint">Stuck? Let your AI coach unstick you.</p>
             </div>
           </div>
-
-          <!-- PROOF SUBMISSION SUB-DECK (Unhidden when all steps checked) -->
-          <div class="proof-box hidden" id="proofBox">
-            <h3>🔒 Day Complete! Upload Proof to Progress</h3>
-            <p>Upload a screenshot (e.g. proof of validation, git commit, Figma wireframe, text draft) and reflection to complete this day and unlock the next phase.</p>
-            
+          <div class="proof-box" id="proofBox">
+            <h3>Submit Day Proof</h3>
+            <p>Upload a screenshot of your work to verify completion.</p>
             <div class="proof-form">
               <div class="upload-dropzone" id="proofDropzone">
+                <span class="upload-text">Drop image or click to upload</span>
+                <img id="imgProofPreview" class="hidden" alt="Proof preview">
                 <input type="file" id="inputProofFile" accept="image/*" class="hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                <div class="upload-text" id="lblUploadStatus">Drag & drop or Click to Upload Screenshot</div>
-                <img id="imgProofPreview" class="hidden" alt="Proof Preview">
               </div>
-              <div class="form-group">
-                <label for="textReflection">Reflection (What did you do? What did you learn?)</label>
-                <textarea id="textReflection" rows="2" placeholder="e.g. Ran the prompt in Claude and verified that..."></textarea>
-              </div>
-              <button class="btn btn-success btn-large btn-glow-anim" id="btnSubmitProof">
-                VERIFY PROOF & CLAIM LEVEL XP
-              </button>
+              <p id="lblUploadStatus"></p>
+              <textarea id="textReflection" rows="2" placeholder="What did you ship today?"></textarea>
+              <button class="btn btn-success" id="btnSubmitProof">Verify Proof</button>
             </div>
           </div>
         </section>
-
       </div>
-
-      <!-- RIGHT SIDEBAR (Leaderboard, Activities, Shop) -->
       <aside class="dashboard-sidebar">
-
-        <!-- LEADERBOARD -->
-        <section class="glass-card sidebar-card">
-          <h3>COHORT LEADERBOARD</h3>
-          <div class="leaderboard-list" id="leaderboardList">
-            <!-- Users injected here -->
-          </div>
-        </section>
-
-        <!-- LIVE ACTIVITY FEED -->
-        <section class="glass-card sidebar-card ticker-card">
-          <h3>COHORT ACTIVITY</h3>
-          <div class="activity-feed" id="activityFeed">
-            <!-- Ticker events here -->
-          </div>
-        </section>
-
-        <!-- FOCUS SHOP -->
-        <section class="glass-card sidebar-card shop-card">
-          <h3>FOCUS COIN SHOP</h3>
+        <div class="sidebar-card glass-card">
+          <h3>Leaderboard</h3>
+          <div class="leaderboard-list" id="leaderboardList"></div>
+        </div>
+        <div class="sidebar-card glass-card ticker-card">
+          <h3>Activity Feed</h3>
+          <div class="activity-feed" id="activityFeed"></div>
+        </div>
+        <div class="sidebar-card glass-card">
+          <h3>Focus Shop</h3>
           <div class="shop-grid">
-            <div class="shop-item" id="shopItemShield" data-id="shield" data-cost="100">
+            <div class="shop-item" id="shopShield">
               <div class="shop-item-details">
                 <span class="shop-item-name">Streak Shield</span>
-                <span class="shop-item-desc">Prevents streak freeze if you miss 24h</span>
+                <span class="shop-item-desc">Protect your streak</span>
               </div>
-              <button class="btn btn-shop" id="btnBuyShield">100 🪙</button>
+              <button class="btn-shop" id="btnBuyShield">🪙 100</button>
             </div>
-            
-            <div class="shop-item" id="shopItemPink" data-id="theme-pink" data-cost="80">
+            <div class="shop-item" id="shopPink">
               <div class="shop-item-details">
-                <span class="shop-item-name">Magenta Cyber Theme</span>
-                <span class="shop-item-desc">Unlocks neon cyber pink aesthetic</span>
+                <span class="shop-item-name">Pink Theme</span>
+                <span class="shop-item-desc">Unlock aesthetic</span>
               </div>
-              <button class="btn btn-shop" id="btnBuyPink">80 🪙</button>
+              <button class="btn-shop" id="btnBuyPink">🪙 80</button>
             </div>
-            
-            <div class="shop-item" id="shopItemBinaural" data-id="sound-binaural" data-cost="60">
+            <div class="shop-item" id="shopBinaural">
               <div class="shop-item-details">
-                <span class="shop-item-name">Alpha Binaural Focus</span>
-                <span class="shop-item-desc">Deep focus ambient frequency pack</span>
+                <span class="shop-item-name">Binaural Focus</span>
+                <span class="shop-item-desc">Deep work audio</span>
               </div>
-              <button class="btn btn-shop" id="btnBuyBinaural">60 🪙</button>
+              <button class="btn-shop" id="btnBuyBinaural">🪙 60</button>
             </div>
           </div>
-        </section>
-
+        </div>
       </aside>
+    </main>
 
+    <!-- MISSION COMPLETE -->
+    <main class="mission-complete-panel hidden" id="missionCompletePanel">
+      <div class="complete-card glass-card">
+        <div class="complete-icon">🚀</div>
+        <h1 class="complete-title">Mission Complete.</h1>
+        <p class="complete-subtitle" id="completeSummaryIdea"></p>
+        <div class="complete-stats">
+          <div class="complete-stat">
+            <span class="complete-stat-value" id="completeSummaryXP">0</span>
+            <span class="complete-stat-label">Total XP</span>
+          </div>
+          <div class="complete-stat">
+            <span class="complete-stat-value" id="completeSummaryStreak">0</span>
+            <span class="complete-stat-label">Day Streak</span>
+          </div>
+          <div class="complete-stat">
+            <span class="complete-stat-value" id="completeSummaryDays">5</span>
+            <span class="complete-stat-label">Days Shipped</span>
+          </div>
+        </div>
+        <p class="complete-msg">You went from idea to shipped in 5 days. That puts you in the top 1% of people who actually execute. Now share what you built.</p>
+        <div class="complete-actions">
+          <button class="btn btn-primary btn-large" onclick="navigator.clipboard?.writeText(window.location.href); alert('Link copied!')">📤 Share Your Build</button>
+          <button class="btn btn-secondary btn-large" id="btnStartNewMission">🔁 Start New Mission</button>
+        </div>
+      </div>
     </main>
 
   </div>
 
-  <!-- TOAST ALERTS OVERLAY -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <!-- MODAL: INSTAGRAM-STYLE COHORT STORY VIEWER -->
+  <!-- MODALS -->
   <div class="modal-overlay hidden" id="modalStory">
-    <div class="glass-card modal-content story-viewer-content">
-      <div class="story-progress-indicator">
-        <div class="story-progress-bar-fill" id="storyBarFill"></div>
-      </div>
+    <div class="modal-content glass-card story-viewer-content">
+      <div class="story-progress-indicator"><div class="story-progress-bar-fill" id="storyBarFill"></div></div>
       <div class="story-header">
         <div class="story-avatar-card">
           <span class="story-author-avatar" id="lblStoryAvatar">🚀</span>
           <div class="story-author-meta">
-            <span class="story-author-name" id="lblStoryAuthor">Aria_Builds</span>
-            <span class="story-author-sub" id="lblStoryAuthorSub">Georgia Tech | Day 2 Proof</span>
+            <span class="story-author-name" id="lblStoryAuthor">Peer</span>
+            <span class="story-author-sub" id="lblStoryAuthorSub">Day 1</span>
           </div>
         </div>
         <span class="close-btn" id="btnExitStory">&times;</span>
       </div>
       <div class="story-image-box">
-        <div class="story-image-canvas" id="imgStoryProofCanvas">
-          <!-- Dynamically generated visual asset will sit here -->
-        </div>
-        <div class="story-overlay-caption" id="lblStoryCaption">Drafting the Figma mockup for my app...</div>
+        <div class="story-image-canvas" id="imgStoryProofCanvas"></div>
+        <div class="story-overlay-caption" id="lblStoryCaption"></div>
       </div>
       <div class="story-actions">
-        <button class="btn btn-secondary btn-sm" id="btnLikeStory">
-          🔥 Support (<span id="lblStoryLikes">12</span>)
-        </button>
-        <button class="btn btn-secondary btn-sm" id="btnReactionStory">
-          ❤️ Love
-        </button>
+        <button class="btn btn-secondary" id="btnLikeStory">Like (<span id="lblStoryLikes">0</span>)</button>
+        <button class="btn btn-primary" id="btnReactionStory">React</button>
       </div>
-      <div class="story-comments" id="lblStoryComments">
-        <!-- Injected Comments -->
-      </div>
+      <div class="story-comments" id="lblStoryComments"></div>
     </div>
   </div>
 
-  <!-- MODAL: PROCRASTINATION EMERGENCY INTERVENTION -->
   <div class="modal-overlay hidden" id="modalEmergency">
-    <div class="glass-card modal-content emergency-content">
+    <div class="modal-content glass-card emergency-content">
       <div class="modal-header">
-        <h2>PROCRASTINATION EMERGENCY RUNNING</h2>
+        <h2>🆘 Emergency Coach</h2>
         <span class="close-btn" id="btnExitEmergency">&times;</span>
       </div>
-      <div class="modal-body" id="emergencyBody">
-        <!-- Injected depending on Coach vibe -->
-      </div>
+      <div class="emergency-body" id="emergencyBody"></div>
     </div>
   </div>
 
-  <!-- MODAL: AI PROOF SCANNER -->
   <div class="modal-overlay hidden" id="modalScanner">
-    <div class="glass-card modal-content scanner-content">
+    <div class="modal-content glass-card scanner-content">
+      <div class="modal-header">
+        <h2>Proof Scanner</h2>
+      </div>
       <div class="scanner-grid-box">
         <div class="scanner-bar"></div>
-        <div class="scanner-visual-net"></div>
-        <div class="scanner-matrix-text" id="lblScannerText">INITIALIZING SYSTEM...</div>
+        <span class="scanner-matrix-text" id="lblScannerText">SCANNING...</span>
       </div>
-      <div class="scanner-logs" id="scannerLogs">
-        <!-- Scanner action logs here -->
-      </div>
+      <div class="scanner-logs" id="scannerLogs"></div>
     </div>
   </div>
 
-  <!-- SCRIPT BOOTSTRAP -->
+  <div class="toast-container" id="toastContainer"></div>
   <script type="module" src="app.js"></script>
 </body>
 </html>
