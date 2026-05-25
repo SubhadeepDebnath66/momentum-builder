@@ -2,12 +2,13 @@ import { db } from './db.js';
 import { audio } from './audio.js';
 import { generateRoadmap } from './generator.js';
 import { getInitialCompetitors, simulateCompetitorProgress } from './leaderboard.js';
-
+import { tracker } from './tracker.js';
+ 
 const DISABLE_FLOW_NOTIFICATIONS = true;
 const FLOW_CIRCUMFERENCE = 326.7;
 const COACH_FACES = { zen: '🧘', hype: '🔥', drill: '🪖' };
 const COACH_NAMES = { zen: 'Zen Master', hype: 'Hype Coach', drill: 'Drill Sergeant' };
-
+ 
 let state = null;
 let timerInterval = null;
 let timerSeconds = 300;
@@ -16,7 +17,7 @@ let timerRunning = false;
 let flowMultiplier = 1;
 let sprintCoinsEarned = 0;
 let activeStoryCompetitorIndex = 0;
-
+ 
 const onboardingPanel = document.getElementById('onboardingPanel');
 const onboardingForm = document.getElementById('onboardingForm');
 const selectOccupation = document.getElementById('selectOccupation');
@@ -94,10 +95,10 @@ const completeSummaryIdea = document.getElementById('completeSummaryIdea');
 const btnSprint5 = document.getElementById('btnSprint5');
 const btnSprint25 = document.getElementById('btnSprint25');
 const btnSprint45 = document.getElementById('btnSprint45');
-
+ 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const on = (el, event, fn) => { if (el) el.addEventListener(event, fn); };
-
+ 
 function init() {
   state = db.load();
   setupEventListeners();
@@ -105,6 +106,7 @@ function init() {
   document.body.className = state.activeTheme === 'pink' ? 'theme-pink' : 'theme-default';
   if (state.profile) showDashboard();
   else showOnboarding();
+  tracker.init(() => state, (s) => db.save(s));
   setInterval(() => {
     if (!state?.profile) return;
     state.competitors = simulateCompetitorProgress(state.competitors);
@@ -113,14 +115,14 @@ function init() {
     renderStoriesRow();
   }, 22000);
 }
-
+ 
 function setupEventListeners() {
   document.body.addEventListener('click', (e) => {
     if (e.target.closest('button, .task-item, .shop-item, input[type="checkbox"], .story-circle')) {
       audio.playClick();
     }
   });
-
+ 
   on(selectOccupation, 'change', () => {
     const value = selectOccupation.value;
     if (value === 'student') {
@@ -134,14 +136,14 @@ function setupEventListeners() {
       inputInstitution.placeholder = 'e.g. FinTech, B2B SaaS';
     }
   });
-
+ 
   on(btnResetAll, 'click', () => {
     if (confirm('Reset your mission? All streak stats, XP, and roadmaps will be lost.')) {
       state = db.reset();
       showOnboarding();
     }
   });
-
+ 
   on(onboardingForm, 'submit', handleOnboarding);
   on(btnToggleTimer, 'click', toggleTimer);
   on(checkFocusSound, 'change', () => {
@@ -162,13 +164,13 @@ function setupEventListeners() {
   on(btnAdvanceDay, 'click', advanceDay);
   on(btnStartNewMission, 'click', () => { state = db.reset(); showOnboarding(); });
   document.addEventListener('visibilitychange', handleTabVisibilityChange);
-
+ 
   // Sprint duration presets
   on(btnSprint5, 'click', () => setSprintDuration(5));
   on(btnSprint25, 'click', () => setSprintDuration(25));
   on(btnSprint45, 'click', () => setSprintDuration(45));
 }
-
+ 
 function setSprintDuration(minutes) {
   if (timerRunning) return;
   sprintTotalSeconds = minutes * 60;
@@ -179,7 +181,7 @@ function setSprintDuration(minutes) {
   map[minutes]?.classList.add('active');
   updateTimerUI();
 }
-
+ 
 function showOnboarding() {
   onboardingPanel?.classList.remove('hidden');
   aiConsole?.classList.add('hidden');
@@ -189,7 +191,7 @@ function showOnboarding() {
   onboardingForm?.reset();
   btnSubmitOnboarding?.classList.remove('hidden');
 }
-
+ 
 function showDashboard() {
   onboardingPanel?.classList.add('hidden');
   appHeader?.classList.remove('hidden');
@@ -199,23 +201,23 @@ function showDashboard() {
   resetTimer();
   renderDashboard();
 }
-
+ 
 function showMissionComplete() {
   onboardingPanel?.classList.add('hidden');
   dashboardPanel?.classList.add('hidden');
   missionCompletePanel?.classList.remove('hidden');
   appHeader?.classList.remove('hidden');
-
+ 
   const daysCompleted = state.mission.roadmap.filter(d => d.status === 'completed').length;
   if (completeSummaryXP) completeSummaryXP.textContent = state.stats.xp;
   if (completeSummaryStreak) completeSummaryStreak.textContent = state.stats.currentStreak;
   if (completeSummaryDays) completeSummaryDays.textContent = daysCompleted;
   if (completeSummaryIdea) completeSummaryIdea.textContent = state.profile?.idea || '';
-
+ 
   audio.playLevelUp();
   triggerToast('Mission Complete! 🚀', 'You shipped a 5-day build. Legendary.', 'success');
 }
-
+ 
 async function handleOnboarding(e) {
   e.preventDefault();
   const name = document.getElementById('inputName')?.value.trim();
@@ -226,12 +228,12 @@ async function handleOnboarding(e) {
     triggerToast('Missing fields', 'Please fill in all required fields.', 'warning');
     return;
   }
-
+ 
   btnSubmitOnboarding?.classList.add('hidden');
   aiConsole?.classList.remove('hidden');
   if (consoleBody) consoleBody.innerHTML = '';
   audio.playScanner(3.5);
-
+ 
   const logs = [
     { text: '[AI Engine] Initializing Claude planning agent...', type: 'input' },
     { text: `[AI Engine] Analyzing: ${name} | ${city}`, type: 'system' },
@@ -246,7 +248,7 @@ async function handleOnboarding(e) {
     consoleBody.scrollTop = consoleBody.scrollHeight;
     await sleep(280);
   }
-
+ 
   const profile = {
     name, city, institution, idea,
     occupation: selectOccupation?.value,
@@ -257,19 +259,19 @@ async function handleOnboarding(e) {
     coachVibe: document.getElementById('selectCoach')?.value,
     selectCategory: document.getElementById('selectCategory')?.value
   };
-
+ 
   // Show a "waiting on AI" line
   const waitLine = document.createElement('div');
   waitLine.className = 'console-line system';
   waitLine.textContent = '[AI Engine] Contacting Claude API...';
   consoleBody?.appendChild(waitLine);
-
+ 
   const roadmap = await generateRoadmap(profile);
-
+ 
   waitLine.textContent = '[AI Engine] Roadmap personalized. Mission Ready.';
   waitLine.className = 'console-line done';
   await sleep(400);
-
+ 
   state.profile = profile;
   state.mission.isGenerated = true;
   state.mission.currentDay = 1;
@@ -281,14 +283,14 @@ async function handleOnboarding(e) {
   showDashboard();
   triggerToast('Mission Activated!', `Welcome ${name}! Your AI roadmap is ready.`, 'success');
 }
-
+ 
 function renderDashboard() {
   if (!state?.profile) return;
   const vibe = state.profile.coachVibe || 'zen';
   if (lblCoachFace) lblCoachFace.textContent = COACH_FACES[vibe] || COACH_FACES.zen;
   if (lblCoachName) lblCoachName.textContent = COACH_NAMES[vibe] || 'Coach';
   if (lblMissionIdea) lblMissionIdea.textContent = state.profile.idea;
-
+ 
   if (lblLevel) lblLevel.textContent = state.stats.level;
   if (lblCoins) lblCoins.textContent = state.stats.coins;
   if (lblStreak) lblStreak.textContent = state.stats.currentStreak;
@@ -296,7 +298,7 @@ function renderDashboard() {
   const nextLevelXP = state.stats.level * 250;
   if (barXP) barXP.style.width = `${Math.min(100, (state.stats.xp / nextLevelXP) * 100)}%`;
   if (lblXP) lblXP.textContent = `${state.stats.xp} / ${nextLevelXP} XP`;
-
+ 
   renderTimeline();
   renderChecklist();
   renderStoriesRow();
@@ -304,14 +306,14 @@ function renderDashboard() {
   updateShopUI();
   updateAdvanceDayButton();
 }
-
+ 
 function updateAdvanceDayButton() {
   if (!btnAdvanceDay) return;
   const day = getActiveDay();
   const allDone = day?.steps.every(s => s.done);
   const isLastDay = state.mission.currentDay >= 5;
   const lastDayComplete = isLastDay && day?.status === 'completed';
-
+ 
   if (lastDayComplete) {
     btnAdvanceDay.textContent = 'View Mission Summary';
     btnAdvanceDay.disabled = false;
@@ -325,11 +327,11 @@ function updateAdvanceDayButton() {
     btnAdvanceDay.classList.remove('btn-ready');
   }
 }
-
+ 
 function getActiveDay() {
   return state.mission.roadmap.find((d) => d.day === state.mission.currentDay);
 }
-
+ 
 function renderTimeline() {
   if (!timelineNodes) return;
   timelineNodes.innerHTML = '';
@@ -342,7 +344,7 @@ function renderTimeline() {
     timelineNodes.appendChild(node);
   });
 }
-
+ 
 function renderChecklist() {
   const day = getActiveDay();
   if (!day || !checklistItems) return;
@@ -350,7 +352,7 @@ function renderChecklist() {
   if (lblFocusDay) lblFocusDay.textContent = `DAY ${day.day}`;
   if (lblFocusPhaseName) lblFocusPhaseName.textContent = day.name;
   if (lblFocusDesc) lblFocusDesc.innerHTML = day.description;
-
+ 
   checklistItems.innerHTML = '';
   day.steps.forEach((step) => {
     const item = document.createElement('div');
@@ -365,7 +367,7 @@ function renderChecklist() {
     checklistItems.appendChild(item);
   });
 }
-
+ 
 function toggleStepCheckbox(stepId) {
   const day = getActiveDay();
   if (!day) return;
@@ -376,6 +378,7 @@ function toggleStepCheckbox(stepId) {
     state.stats.xp += 25;
     state.stats.coins += 10;
     audio.playCoins();
+    tracker.onTaskComplete();
     triggerCoachFaceReaction('happy');
     checkLevelUpTrigger();
     const allDone = day.steps.every((s) => s.done);
@@ -393,7 +396,7 @@ function toggleStepCheckbox(stepId) {
   db.save(state);
   renderDashboard();
 }
-
+ 
 function triggerCoachFaceReaction(mood) {
   if (!lblCoachFace) return;
   lblCoachFace.classList.remove('happy', 'sad');
@@ -402,7 +405,7 @@ function triggerCoachFaceReaction(mood) {
     setTimeout(() => lblCoachFace.classList.remove(mood), 800);
   }
 }
-
+ 
 function checkLevelUpTrigger() {
   let nextLevelXP = state.stats.level * 250;
   while (state.stats.xp >= nextLevelXP) {
@@ -413,7 +416,7 @@ function checkLevelUpTrigger() {
     triggerToast('Level Up!', `You reached level ${state.stats.level}!`, 'success');
   }
 }
-
+ 
 function renderStoriesRow() {
   if (!storiesBar || !state.competitors?.length) return;
   storiesBar.innerHTML = '';
@@ -425,7 +428,7 @@ function renderStoriesRow() {
     storiesBar.appendChild(el);
   });
 }
-
+ 
 function openStoryViewer(index) {
   activeStoryCompetitorIndex = index;
   const c = state.competitors[index];
@@ -447,7 +450,7 @@ function openStoryViewer(index) {
   db.save(state);
   renderStoriesRow();
 }
-
+ 
 function renderStoryMockScreen(type) {
   if (!imgStoryProofCanvas) return;
   if (type === 'figma') {
@@ -458,11 +461,11 @@ function renderStoryMockScreen(type) {
     imgStoryProofCanvas.innerHTML = '<div class="mock-code-screen">const ship = () => launch();<br>ship();</div>';
   }
 }
-
+ 
 function closeStoryViewer() {
   modalStory?.classList.add('hidden');
 }
-
+ 
 function handleStoryLike() {
   const c = state.competitors[activeStoryCompetitorIndex];
   if (!c) return;
@@ -470,14 +473,14 @@ function handleStoryLike() {
   if (lblStoryLikes) lblStoryLikes.textContent = c.story.likes;
   db.save(state);
 }
-
+ 
 function renderSidebar() {
   if (!leaderboardList) return;
   const entries = [
     { name: state.profile?.name || 'You', institution: state.profile?.institution || '', xp: state.stats.xp, streak: state.stats.currentStreak, me: true },
     ...state.competitors.map((c) => ({ name: c.name, institution: c.institution, xp: c.xp, streak: c.streak, me: false }))
   ].sort((a, b) => b.xp - a.xp);
-
+ 
   leaderboardList.innerHTML = entries
     .map((e, i) => `
     <div class="leaderboard-item${e.me ? ' me' : ''}">
@@ -486,20 +489,20 @@ function renderSidebar() {
       </div>
       <div class="rank-score"><span class="score-xp">${e.xp} XP</span><span class="score-streak">🔥 ${e.streak}</span></div>
     </div>`).join('');
-
+ 
   if (activityFeed) {
     activityFeed.innerHTML = state.competitors.slice(0, 6)
       .map((c) => `<div class="activity-log"><span class="peer-name">${c.name}</span> ${c.lastActivity}</div>`)
       .join('');
   }
 }
-
+ 
 function updateShopUI() {
   const owned = state.unlockedShopItems || [];
   document.getElementById('shopPink')?.classList.toggle('owned', owned.includes('theme-pink'));
   document.getElementById('shopBinaural')?.classList.toggle('owned', owned.includes('sound-binaural'));
 }
-
+ 
 function resetTimer() {
   timerSeconds = sprintTotalSeconds;
   timerRunning = false;
@@ -515,7 +518,7 @@ function resetTimer() {
   timerSeconds = sprintTotalSeconds;
   updateTimerUI();
 }
-
+ 
 function updateTimerUI() {
   const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
   const s = String(timerSeconds % 60).padStart(2, '0');
@@ -526,7 +529,7 @@ function updateTimerUI() {
   if (lblSprintProgress) lblSprintProgress.textContent = `${Math.round(progress * 100)}%`;
   if (lblSprintCoins) lblSprintCoins.textContent = sprintCoinsEarned;
 }
-
+ 
 function toggleTimer() {
   if (timerRunning) {
     timerRunning = false;
@@ -539,12 +542,14 @@ function toggleTimer() {
   timerRunning = true;
   if (btnToggleTimer) btnToggleTimer.textContent = 'Pause Sprint';
   if (checkFocusSound?.checked) audio.startFocusHum();
+  tracker.onSprintStart();
   timerInterval = setInterval(() => {
     if (timerSeconds <= 0) {
       clearInterval(timerInterval);
       timerRunning = false;
       if (btnToggleTimer) btnToggleTimer.textContent = 'Start Sprint';
       audio.playSprintMilestone();
+      tracker.onSprintEnd(sprintTotalSeconds);
       triggerToast('Sprint Complete!', `Earned ${sprintCoinsEarned} focus coins.`, 'success');
       return;
     }
@@ -560,7 +565,7 @@ function toggleTimer() {
     updateTimerUI();
   }, 1000);
 }
-
+ 
 function createFloatingCoinIndicator(text) {
   if (!coinStreamTarget) return;
   const el = document.createElement('span');
@@ -570,7 +575,7 @@ function createFloatingCoinIndicator(text) {
   coinStreamTarget.appendChild(el);
   setTimeout(() => el.remove(), 1100);
 }
-
+ 
 function triggerToast(title, body, type = 'success') {
   if (DISABLE_FLOW_NOTIFICATIONS && (title.includes('Flow') || title.includes('Maximum'))) return;
   if (!toastContainer) return;
@@ -580,34 +585,34 @@ function triggerToast(title, body, type = 'success') {
   toastContainer.appendChild(toast);
   setTimeout(() => toast.remove(), 4000);
 }
-
+ 
 async function launchEmergency() {
   const vibe = state.profile?.coachVibe || 'zen';
   const day = getActiveDay();
   const pendingTasks = day?.steps.filter(s => !s.done).map(s => s.text) || [];
   const idea = state.profile?.idea || 'your project';
-
+ 
   // Show loading state
   if (emergencyBody) {
     emergencyBody.innerHTML = `<div class="emergency-loading"><div class="breath-circle">Thinking...</div><p style="color:var(--text-muted);margin-top:12px">Coach is preparing your plan...</p></div>`;
   }
   modalEmergency?.classList.remove('hidden');
-
+ 
   try {
     const prompt = `You are a ${vibe === 'zen' ? 'calm zen' : vibe === 'hype' ? 'high-energy hype' : 'no-nonsense drill sergeant'} startup coach.
-
+ 
 A founder building "${idea}" is feeling stuck or overwhelmed right now.
-
+ 
 Their pending tasks for today are:
 ${pendingTasks.length ? pendingTasks.map((t, i) => `${i + 1}. ${t}`).join('\n') : 'No specific tasks listed'}
-
+ 
 Give them a VERY SHORT, PUNCHY unstuck strategy (3-5 sentences max). Match the ${vibe} coach personality perfectly:
 - zen: calm, reassuring, one small step focus
 - hype: energetic, exciting, pump them up  
 - drill: blunt, direct, no excuses
-
+ 
 End with ONE specific micro-action they can do in the next 2 minutes.`;
-
+ 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -617,10 +622,10 @@ End with ONE specific micro-action they can do in the next 2 minutes.`;
         messages: [{ role: 'user', content: prompt }]
       })
     });
-
+ 
     const data = await response.json();
     const advice = data.content?.find(b => b.type === 'text')?.text || '';
-
+ 
     if (emergencyBody) {
       emergencyBody.innerHTML = `
         <p class="emergency-coach-comment">${advice.replace(/\n/g, '<br>')}</p>
@@ -638,11 +643,11 @@ End with ONE specific micro-action they can do in the next 2 minutes.`;
     }
   }
 }
-
+ 
 function closeEmergency() {
   modalEmergency?.classList.add('hidden');
 }
-
+ 
 function handleProofSelect() {
   const file = inputProofFile?.files?.[0];
   if (!file) return;
@@ -656,7 +661,7 @@ function handleProofSelect() {
   };
   reader.readAsDataURL(file);
 }
-
+ 
 async function runProofScanVerification() {
   if (!inputProofFile?.files?.length) {
     triggerToast('No proof', 'Upload a screenshot first.', 'warning');
@@ -666,7 +671,7 @@ async function runProofScanVerification() {
   if (scannerLogs) scannerLogs.innerHTML = '';
   if (lblScannerText) lblScannerText.textContent = 'SCANNING...';
   audio.playScanner(2);
-
+ 
   const scanLines = ['Checking image hash...', 'Matching UI patterns...', 'Verifying progress markers...', 'Proof validated!'];
   for (const line of scanLines) {
     await sleep(600);
@@ -675,7 +680,7 @@ async function runProofScanVerification() {
     el.textContent = line;
     scannerLogs?.appendChild(el);
   }
-
+ 
   const day = getActiveDay();
   if (day) day.proof = { verified: true, reflection: textReflection?.value || '' };
   state.stats.xp += 50;
@@ -689,7 +694,7 @@ async function runProofScanVerification() {
   renderDashboard();
   triggerToast('Proof Verified', '+50 XP and +25 coins!', 'success');
 }
-
+ 
 function updateStreakOnDayCompletion() {
   const today = getTodayDateString();
   const last = state.stats.lastActiveDate;
@@ -710,32 +715,32 @@ function updateStreakOnDayCompletion() {
   state.stats.lastActiveDate = today;
   state.stats.longestStreak = Math.max(state.stats.longestStreak, state.stats.currentStreak);
 }
-
+ 
 function getTodayDateString() {
   return new Date().toISOString().slice(0, 10);
 }
-
+ 
 function getDaysDifference(dateStr1, dateStr2) {
   const d1 = new Date(dateStr1);
   const d2 = new Date(dateStr2);
   return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
 }
-
+ 
 function advanceDay() {
   const day = getActiveDay();
   const isLastDay = state.mission.currentDay >= 5;
   const lastDayComplete = isLastDay && day?.status === 'completed';
-
+ 
   if (lastDayComplete) {
     showMissionComplete();
     return;
   }
-
+ 
   if (!day?.steps.every(s => s.done)) {
     triggerToast('Not yet!', 'Complete all tasks first.', 'warning');
     return;
   }
-
+ 
   const current = state.mission.roadmap.find((d) => d.day === state.mission.currentDay);
   if (current) current.status = 'completed';
   state.mission.currentDay += 1;
@@ -746,7 +751,7 @@ function advanceDay() {
   renderDashboard();
   triggerToast(`Day ${state.mission.currentDay} Unlocked`, 'Keep the momentum going!', 'success');
 }
-
+ 
 function buyShopItem(itemId, cost) {
   if (state.stats.coins < cost) {
     triggerToast('Not enough coins', `You need ${cost} focus coins.`, 'warning');
@@ -772,7 +777,7 @@ function buyShopItem(itemId, cost) {
   db.save(state);
   renderDashboard();
 }
-
+ 
 function handleTabVisibilityChange() {
   if (!document.hidden || !state?.profile) return;
   const day = getActiveDay();
@@ -787,5 +792,5 @@ function handleTabVisibilityChange() {
     new Notification('Momentum Coach Alert', { body: msg });
   }
 }
-
+ 
 window.onload = init;

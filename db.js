@@ -8,12 +8,17 @@ const defaultState = {
     currentStreak: 0,
     longestStreak: 0,
     lastActiveDate: null,
-    shieldsCount: 0
+    shieldsCount: 0,
+    totalDaysCompleted: 0
   },
   mission: {
     isGenerated: false,
     currentDay: 1,
-    roadmap: []
+    roadmap: [],
+    currentSession: 1,
+    sessionReviews: [],
+    allSessionsComplete: false,
+    awaitingReview: false
   },
   achievements: [],
   unlockedShopItems: ['default-theme', 'sound-none'],
@@ -21,7 +26,7 @@ const defaultState = {
   activeAmbientSound: 'none',
   competitors: []
 };
-
+ 
 export const db = {
   load() {
     const raw = localStorage.getItem(DB_KEY);

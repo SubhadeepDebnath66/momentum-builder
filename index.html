@@ -44,7 +44,7 @@
         <button class="btn btn-secondary btn-sm" id="btnResetAll">Reset Mission</button>
       </div>
     </header>
-
+ 
     <!-- ONBOARDING -->
     <main class="onboarding-panel" id="onboardingPanel">
       <div class="onboarding-header">
@@ -150,7 +150,7 @@
         <div class="console-body" id="consoleBody"></div>
       </div>
     </main>
-
+ 
     <!-- DASHBOARD -->
     <main class="dashboard-panel hidden" id="dashboardPanel">
       <div class="dashboard-main">
@@ -188,12 +188,12 @@
             <h4>Today's Checklist</h4>
             <div class="checklist-items" id="checklistItems"></div>
           </div>
-
+ 
           <!-- Advance Day Button (replaces Simulate) -->
           <div class="advance-day-wrapper">
             <button class="btn btn-advance" id="btnAdvanceDay" disabled>Complete all tasks to advance</button>
           </div>
-
+ 
           <div class="work-bar">
             <div class="timer-box gamified">
               <div class="sprint-presets">
@@ -240,6 +240,13 @@
         </section>
       </div>
       <aside class="dashboard-sidebar">
+        <div class="sidebar-card glass-card tracker-card-main">
+          <div class="tracker-card-header">
+            <h3>Execution Score</h3>
+            <span class="tracker-score-badge" id="trackerScoreHeader">0</span>
+          </div>
+          <div id="trackerInsightPanel"><div class="tracker-loading">Tracking session...</div></div>
+        </div>
         <div class="sidebar-card glass-card">
           <h3>Leaderboard</h3>
           <div class="leaderboard-list" id="leaderboardList"></div>
@@ -276,7 +283,7 @@
         </div>
       </aside>
     </main>
-
+ 
     <!-- MISSION COMPLETE -->
     <main class="mission-complete-panel hidden" id="missionCompletePanel">
       <div class="complete-card glass-card">
@@ -304,9 +311,9 @@
         </div>
       </div>
     </main>
-
+ 
   </div>
-
+ 
   <!-- MODALS -->
   <div class="modal-overlay hidden" id="modalStory">
     <div class="modal-content glass-card story-viewer-content">
@@ -332,7 +339,7 @@
       <div class="story-comments" id="lblStoryComments"></div>
     </div>
   </div>
-
+ 
   <div class="modal-overlay hidden" id="modalEmergency">
     <div class="modal-content glass-card emergency-content">
       <div class="modal-header">
@@ -342,7 +349,7 @@
       <div class="emergency-body" id="emergencyBody"></div>
     </div>
   </div>
-
+ 
   <div class="modal-overlay hidden" id="modalScanner">
     <div class="modal-content glass-card scanner-content">
       <div class="modal-header">
@@ -355,7 +362,7 @@
       <div class="scanner-logs" id="scannerLogs"></div>
     </div>
   </div>
-
+ 
   <div class="toast-container" id="toastContainer"></div>
   <script type="module" src="app.js"></script>
 </body>
